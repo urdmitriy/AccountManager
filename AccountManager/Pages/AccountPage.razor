@@ -1,0 +1,203 @@
+﻿@page "/"
+@using AccountManager.Data
+@inherits AccountPageRazor
+
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+             <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+                         <meta http-equiv="X-UA-Compatible" content="ie=edge">
+             <title>Аккаунты клиентов</title>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+            <h3>Аккаунты клиентов</h3>
+        </div>
+    </div>
+    <div class="row mb-2">
+        <div class="col-5">
+            <p class="d-inline">Организация</p>
+            <select class="form-select d-inline" style="min-width: 150px; max-width: 300px" @bind="CurrentCustomer.Id">
+                @if (Customers != null)
+                {
+                    foreach (var customer in Customers)
+                    {
+                        <option @onclick="UpdateAccounts" value="@(customer.Id)">@customer.Name</option>
+                    }
+                }
+            </select>
+        </div>
+
+        <div class="col-7 text-end mb-auto mt-auto">
+            <button class="btn btn-danger" @onclick="ShowAddCustomerWindow">Добавить организацию</button>
+            <button class="btn btn-secondary" @onclick="() => ShowEditCustomerWindow(CurrentCustomer.Id)">Редактировать организацию</button>
+            <button class="btn btn-warning" @onclick="ShowAddAccountWindow">Добавить аккаунт</button>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col">
+            <table class="table">
+                <thead>
+                <tr class="table-dark table-striped">
+                    <th>Имя</th>
+                    <th>e-mail</th>
+                    <th>Логин</th>
+                    <th>Пароль</th>
+                    <th></th>
+                </tr>
+                </thead>
+
+                <tbody>
+                @if (Accounts != null)
+                {
+                    foreach (var account in Accounts)
+                    {
+                        <tr>
+                            <td>@account.Name</td>
+                            <td>@account.Email</td>
+                            <td><button class="btn btn-outline-dark btn-sm" style="min-width: 100px" @onclick="() => ShowEditAccountWindow(account.Id)">@account.Login</button></td>
+                            <td>@account.Password</td>
+                            <td>
+                                <div>
+                                    <button class="btn btn-info" @onclick="() => UpdatePasswordAccountAsync(account)" title="Сгенерировать новый пароль">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-activity" viewBox="0 0 16 16">
+                                          <path fill-rule="evenodd" d="M6 2a.5.5 0 0 1 .47.33L10 12.036l1.53-4.208A.5.5 0 0 1 12 7.5h3.5a.5.5 0 0 1 0 1h-3.15l-1.88 5.17a.5.5 0 0 1-.94 0L6 3.964 4.47 8.171A.5.5 0 0 1 4 8.5H.5a.5.5 0 0 1 0-1h3.15l1.88-5.17A.5.5 0 0 1 6 2Z"/>
+                                        </svg>
+                                    </button>
+                                    <button class="btn btn-success" @onclick="() => EmailSender.SendPasswordToClient(account)" title="Отправить на почту пользователю">
+                                        
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-envelope" viewBox="0 0 16 16">
+                                            <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4Zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2Zm13 2.383-4.708 2.825L15 11.105V5.383Zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741ZM1 11.105l4.708-2.897L1 5.383v5.722Z"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal" tabindex="-1" style="@(IsShowModalEditAccount?"display: block":"display: none")">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-secondary text-white">
+        <h5 class="modal-title">Редактирование аккаунта</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @onclick="() => IsShowModalEditAccount = false"></button>
+      </div>
+        <div class="modal-body">
+            <div class="row mb-2">
+                <div class="col">
+                    <label for="selectCustomer">Организация</label>
+                    <select id="selectCustomer" class="form-select" @bind="CurrentAccount.IdCustomer">
+                        @if (Customers != null)
+                        {
+                            foreach (var customer in Customers)
+                            {
+                                if (customer.Id == CurrentAccount?.Id)
+                                {
+                                    <option selected Value="@customer.Id">@customer.Name</option>
+                                }
+                                else
+                                {
+                                    <option value="@customer.Id">@customer.Name</option>
+                                }
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+            
+            <div class="row mb-2">
+                <div class="col">
+                    <label for="inputName" class="form-label">Имя</label>
+                    <input id="inputName" type="text" class="form-control" @bind="CurrentAccount.Name"/>
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col">
+                    <label for="inputEmail">E-mail</label>
+                    <input id="inputEmail" type="Email" class="form-control" @bind="CurrentAccount.Email"/>
+                </div>
+            </div>
+            
+            <div class="row mb-2">
+                <div class="col">
+                    <label for="inputName" class="form-label">Логин</label>
+                    <input id="inputLogin" type="text" class="form-control" @bind="CurrentAccount.Login"/>
+                </div>
+            </div>
+            
+            <div class="row mb-2">
+                <div class="col">
+                    <label for="inputPassword">Пароль</label>
+                    <input id="inputPassword" type="text" class="form-control" @bind="CurrentAccount.Password"/>
+                </div>
+            </div>
+            
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @onclick="() => IsShowModalEditAccount = false">Закрыть</button>
+            <button type="button" class="btn btn-primary" @onclick="() => UpdateAccountAsync(CurrentAccount)">Сохранить аккаунт</button>
+            <button type="button" class="btn btn-danger btn-sm" @onclick="() => DeleteAccountAsync(CurrentAccount.Id)">Удалить</button>
+        </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" tabindex="-1" style="@(IsShowModalEditCustomer?"display: block":"display: none")">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-secondary text-white">
+        <h5 class="modal-title">Редактирование организации</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @onclick="() => IsShowModalEditCustomer = false"></button>
+      </div>
+        <div class="modal-body">
+            
+            <div class="row mb-2">
+                <div class="col">
+                    <label for="inputNameCustomer" class="form-label">Наименование</label>
+                    <input id="inputNameCustomer" type="text" class="form-control" @bind="CurrentCustomer.Name"/>
+                </div>
+            </div>
+            
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @onclick="() => IsShowModalEditCustomer = false">Закрыть</button>
+            <button type="button" class="btn btn-primary" @onclick="() => UpdateCustomerAsync(CurrentCustomer)">Сохранить организацию</button>
+            <button type="button" class="btn btn-danger btn-sm" @onclick="() => DeleteCustomerAsync(CurrentCustomer.Id)">Удалить</button>
+        </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal modal-lg" tabindex="-1" style="@(IsShowModalError?"display: block":"display: none")">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-warning">
+                <h5 class="modal-title">Внимание</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @onclick="() => IsShowModalError = false"></button>
+            </div>
+            <div class="modal-body">
+            
+                <div class="row mb-2">
+                    <div class="col">
+                        <p>@Message</p>
+                    </div>
+                </div>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AccountManager", "AccountManager\AccountManager.csproj", "{CE1CAAF2-F68B-416E-8AD9-5E0BB645DFF6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "test", "test\test.csproj", "{BF0ABE63-FD79-4A1B-A67D-C0C22ABF0F48}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CE1CAAF2-F68B-416E-8AD9-5E0BB645DFF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE1CAAF2-F68B-416E-8AD9-5E0BB645DFF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE1CAAF2-F68B-416E-8AD9-5E0BB645DFF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE1CAAF2-F68B-416E-8AD9-5E0BB645DFF6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF0ABE63-FD79-4A1B-A67D-C0C22ABF0F48}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF0ABE63-FD79-4A1B-A67D-C0C22ABF0F48}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF0ABE63-FD79-4A1B-A67D-C0C22ABF0F48}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF0ABE63-FD79-4A1B-A67D-C0C22ABF0F48}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
